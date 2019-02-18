@@ -4,6 +4,7 @@
 # Student ID: S1719024
 # Version: 0.1
 
+# TODO: try using redirectors (<)
 
 STUDENTNAME="Jules Maurice Mulisa"
 STUDENTID="S1719024"
@@ -13,8 +14,8 @@ displayWelcome(){
     echo -e "\r\n**********************************************"
     echo -e "\r\tWELCOME TO SAFE DELETE SCRIPT!"
     echo -e "\r\tWRITTEN BY: $STUDENTNAME"
-    echo -e "\r\tSTUDENTID: $STUDENTID"
-    echo -e "\r\tSUBMITTED ON: Feb 22, 2019"
+    echo -e "\r\tSTUDENT ID: $STUDENTID"
+    echo -e "\r\tSUBMITTED : Feb 22, 2019"
     echo -e "**********************************************\r\n"
 }
 
@@ -37,15 +38,31 @@ trap 'echo $0 is terminated with status 1' exit 1
 # the following lists files in directory when SIGINT or Ctrl+C is pressed.
 # trap 'echo "I am gonna list files in current directory"; ls -l' SIGINT
 
-#Functions
+# **************** Functions ******************
+
+# Tells the user what the correct options/arguments should be 
+# in case anything goes wrong
 usage(){
 	echo -e "\r\nUSAGE OF: $0 script: [-l] [-r <option> ][-d] [-t] [-m] [-k]"
 }
 
+TRASHCAN=".trashCan"
 # Lists formatted contents of the trashCan directory on screen
 listTrashContent(){
-    echo "Function listTrashContent is called."
-    ls -a
+   local COUNTER=1
+    echo -e "\r\n*** Files in .trashCan directory ***\r\n"
+    # checks first if the argument given is a directory
+    if [[ -d "$TRASHCAN" ]]; then
+        # list the files in the given directory
+        for FILE in "$TRASHCAN"/*; 
+        do
+            echo -e "File $COUNTER:"
+            echo -e "\r\tNAME: $(basename $FILE)"
+            echo -e "\r\tSIZE: $(stat -c%s $FILE) bytes"
+            echo -e "\r\tTYPE: $(file -b --mime-type $FILE)"
+            (( COUNTER ++ ))
+        done
+    fi
 }
 
 # Gets a specified file from the trashCan directory and place it in the current directory
@@ -76,7 +93,7 @@ killMonitor(){
 while getopts lr:dtmk args #options
 do
   case $args in
-     l) listTrashContent;;
+     l) listTrashContent $OPTARG;;
      r) echo "r option; data: $OPTARG";;
      d) deleteTrashContent;; 
      t) displayUsage;; 
