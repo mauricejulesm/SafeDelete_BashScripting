@@ -49,13 +49,12 @@ usage(){
 TRASHCAN=".trashCan"
 # Lists formatted contents of the trashCan directory on screen
 listTrashContent(){
-   local COUNTER=1
-    echo -e "\r\n*** Files in .trashCan directory ***\r\n"
+ local COUNTER=1
+ echo -e "\r\n*** Files in .trashCan directory ***\r\n"
     # checks first if the argument given is a directory
     if [[ -d "$TRASHCAN" ]]; then
         # list the files in the given directory
-        for FILE in "$TRASHCAN"/*; 
-        do
+        for FILE in "$TRASHCAN"/*; do
             echo -e "File $COUNTER:"
             echo -e "\r\tNAME: $(basename $FILE)"
             echo -e "\r\tSIZE: $(stat -c%s $FILE) bytes"
@@ -67,7 +66,14 @@ listTrashContent(){
 
 # Gets a specified file from the trashCan directory and place it in the current directory
 recoverFile(){
-    echo "Function recoverFile is called."
+    # check if the file exists in the trashCan directory.
+    if [[ ! -e "$TRASHCAN/$1" ]]; then
+        echo "The file you provided does not exit. Try again, Please!"
+    else
+        # if exists move it the current directory
+        mv $TRASHCAN/$1 $1
+        echo "File $(basename $1) has been recovered successfully!"
+    fi
 }
 
 # Interactively deletes the contents of the trashCan directory 
@@ -77,7 +83,7 @@ deleteTrashContent(){
 
 # Displays total usage in bytes of the trashCan directory for the user of the trashcan 
 displayUsage(){
-    echo "Function displayUsage is called."
+    echo -e "Total usage of TrashCan directory: $(du -h $TRASHCAN) bytes"
 }
 
 # Starts monitor script process
@@ -90,18 +96,18 @@ killMonitor(){
     echo "Function  killMonitor is called."
 }
 
-while getopts lr:dtmk args #options
+while getopts lr:dtwk args #options
 do
-  case $args in
-     l) listTrashContent $OPTARG;;
-     r) echo "r option; data: $OPTARG";;
-     d) deleteTrashContent;; 
-     t) displayUsage;; 
-     w) startMonitor;; 
-     k) killMonitor;;     
-     :) echo "data missing, option -$OPTARG";;
-    \?) usage;;
-  esac
+    case $args in
+        l) listTrashContent $OPTARG;;
+        r) recoverFile $OPTARG;;
+        d) deleteTrashContent;; 
+        t) displayUsage;; 
+        w) startMonitor;; 
+        k) killMonitor;;     
+        :) echo "data missing, option -$OPTARG";;
+        \?) usage;;
+    esac
 done
 
 ((pos = OPTIND - 1))
@@ -122,15 +128,18 @@ then
         select menu_list in $MENU_ITEMS
         do 
             case $menu_list in
-                 "list") listTrashContent;;
-                 "recover") recoverFile;;
-                 "delete") deleteTrashContent;;
-                 "total") displayUsage;;
-                 "watch") startMonitor;;
-                 "kill") killMonitor;;
-                 "exit") exit 0;;
-                 *) usage;;
-             esac
+                "list") listTrashContent;;
+                "recover")
+                    echo -n "Enter the name of the file you want to recover:"
+                    read  fileName
+                    recoverFile $fileName;;
+                "delete") deleteTrashContent;;
+                "total") displayUsage;;
+                "watch") startMonitor;;
+                "kill") killMonitor;;
+                "exit") exit 0;;
+                *) usage;;
+            esac
         done
     fi
 else 
