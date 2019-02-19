@@ -66,11 +66,41 @@ listTrashContent(){
 
 # Gets a specified file from the trashCan directory and place it in the current directory
 recoverFile(){
-    # check if the file exists in the trashCan directory.
+    # check if the specified file really exists in the trashCan directory.
     if [[ ! -e "$TRASHCAN/$1" ]]; then
-        echo "The file you provided does not exit. Try again, Please!"
+        echo "***The file you provided does not exit. Try again, Please!"
+
+    # check if there is a file with the same name in the destination directory (current).
+    elif [[ -e "$1" ]]; then
+        echo -n -e "\r\n***Same file found in the destination directory choose: 
+                (A/a) to append content, 
+                (R/r) to save file with new name, or 
+                (O/o) to overwrite contents,
+        Enter your Answer here: "
+        
+        read userAnswer
+        case "$userAnswer" in
+            A | a)
+                # if there is existing same file but wants to keep both files' contents. 
+                cat $TRASHCAN/$1 >> $1
+                rm $TRASHCAN/$1
+                echo "File contents appended successfully!"
+            ;;
+            R | r)
+                # the user can choose to keep the  with same name in destination,
+                # but recover the one in trash with a new name
+                echo -n "Enter new fileName:"
+                read newFileName
+                mv $TRASHCAN/$1 $newFileName
+            ;;
+            O | *)
+                # this does the default mv functionality which is overwriting the content of file
+                mv $TRASHCAN/$1 $1
+                echo "File overwitten successfully!"
+            ;;  
+        esac # end the switch case
     else
-        # if exists move it the current directory
+        # if exists and there is no other same file move it gracefully to the current directory
         mv $TRASHCAN/$1 $1
         echo "File $(basename $1) has been recovered successfully!"
     fi
