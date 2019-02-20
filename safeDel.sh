@@ -9,6 +9,8 @@
 STUDENTNAME="Jules Maurice Mulisa"
 STUDENTID="S1719024"
 
+TRASHCAN=".trashCan"
+MONITOR_SCRIPT="./monitor.sh"
 
 displayWelcome(){
     echo -e "\r\n**********************************************"
@@ -25,10 +27,10 @@ displayWelcome
 
 
 # signal is sent whenever the program exits with status 0
-trap 'echo $0 is terminated with status 0' exit 0
+trap 'echo $0 is terminated with int' 1
 
 # signal is sent whenever the program exits with status 1
-trap 'echo $0 is terminated with status 1' exit 1
+trap 'echo $0 is terminated by quit'  0
 
 # signal is sent whenever the program exits anyhow
 #trap 'echo $0 is terminated at any exit' exit 
@@ -46,7 +48,6 @@ usage(){
 	echo -e "\r\nUSAGE OF: $0 script: [-l] [-r <option> ][-d] [-t] [-m] [-k]"
 }
 
-TRASHCAN=".trashCan"
 # Lists formatted contents of the trashCan directory on screen
 listTrashContent(){
  local COUNTER=1
@@ -64,6 +65,7 @@ listTrashContent(){
     fi
 }
 
+# TODO make the move of many files possible
 # Gets a specified file from the trashCan directory and place it in the current directory
 recoverFile(){
     # check if the specified file really exists in the trashCan directory.
@@ -108,22 +110,39 @@ recoverFile(){
 
 # Interactively deletes the contents of the trashCan directory 
 deleteTrashContent(){
-    echo "Function deleteTrashContent is called."
+    for file in $TRASHCAN; do
+        read answer
+        echo -n "Do you want to delete: $(basename $file)?(Y/N)"
+        case $answer in
+            Y | y )
+                rm $file
+                echo "File $(basename $file) deleted"
+                ;;
+            N | * )
+            echo "File skipped"
+                ;;
+        esac
+    done
 }
 
-# Displays total usage in bytes of the trashCan directory for the user of the trashcan 
+# Displays total usage in bytes of the trashCan for the user of the trashcan 
 displayUsage(){
-    echo -e "Total usage of TrashCan directory: $(du -h $TRASHCAN) bytes"
+    echo -n "Total usage of TrashCan directory: 
+            $(du -sb $TRASHCAN | cut -f1) Bytes\r\n"
 }
 
 # Starts monitor script process
 startMonitor(){
-    echo "Function startMonitor is called."
+    # local SAFE_DEL_PID=$BASHPID
+    # echo "The process id of safeDel script is : $SAFE_DEL_PID"
+    sh $MONITOR_SCRIPT $TRASHCAN 2
+    # echo "Monitor Script is running..."
 }
 
 # Kills the current user’s monitor script processes 
 killMonitor(){
-    echo "Function  killMonitor is called."
+    kill -SIGKILL $(pidof $MONITOR_SCRIPT)
+    echo "Monitor Script is terminated"
 }
 
 while getopts lr:dtwk args #options
