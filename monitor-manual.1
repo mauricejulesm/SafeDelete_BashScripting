@@ -1,0 +1,30 @@
+.TH monitor-manual 1
+.SH NAME
+monitor \- monitors the modifications on trashCan directory
+.SH SYNOPSIS
+.B monitor
+[\fIOPTION\fR]... \fItrashCan\fR 
+.SH DESCRIPTION
+.B monitor
+is script that monitors the modifications that happen on the trashcan directory scripts. These modifications include, delete, modify and move. bash shell has the problem to open new tabs itself. so, this monitor script will run perfectly on a different xterm terminal window.
+.SS OPTIONS
+.TP
+\- /home/$USER/trashCan 15
+This privides the monitor with where the trashcan is and the sleep time. u don'tneed these arguments when the script is started from safeDel.sh
+.SH EXAMPLES
+.TP
+Please have xterm installed for it to display trashCan modification well on a new terminal window. run the following command if u don't  have xterm.
+.B sudo apt-get install xterm
+.SH SEE ALSO
+.BR safeDel-manulal (1)
+.SH BUGS
+.BR 
+please xterm on your machine by typing this comman. sudo apt-get install xterm
+.SH AUTHOR
+.TP 
+Name: Script proudly written by Jules Maurice Mulisa
+.TP 
+Email: jmulisa15@alustudent.com
+.TP 
+ID: S1719024
+

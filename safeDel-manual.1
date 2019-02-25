@@ -1,0 +1,53 @@
+.TH safeDel-manual 1
+.SH NAME
+safeDel \- Implements recycle bin functionalities
+.SH SYNOPSIS
+.B safeDel
+[\fIOPTION\fR]... \fIFILE\fR \fIOPTARG\fR
+.SH DESCRIPTION
+.B safeDel
+is script that mimic or implements the functinalities of the recyclebin or trashCan. The script can be run in a command line option driven and an interactive menu driven mode. It can also, recover files from trashCan, list contents, delete, and start other scripts. 
+.SS OPTIONS
+.TP
+\-l
+Lists all files in the trashcan directory
+.TP
+\-r \fIfile\fR 
+Recovers a file from trashcan to the working directory
+.TP
+\-d
+Deletes interactivelly the files in the trashcan directory
+.TP
+\-t
+Displays the totay usage of the Trashcan directory
+.TP
+\-w
+Starts another script called monitor.sh to watch modifications on the trashcan director
+.TP
+\-k
+Kills the processes or process ID of the monitor script
+.SH EXAMPLES
+.TP
+Deleting or moving files to trashcan
+.B safeDel \fIfile\fR \fI[file...]\fR 
+.TP
+Listing trashcan contents
+.B safeDel \-l 
+.TP
+Recovering the file
+.B safeDel \-r \fIfile\fR 
+.TP
+To use the Menu driven mode, run the script without any argument
+.B safeDel
+.SH SEE ALSO
+.BR monitor-manulal (1)
+.SH BUGS
+.BR To see well how the monitor script runs. Run it itself independently.
+.SH AUTHOR
+.TP 
+Name: Script proudly written by Jules Maurice Mulisa
+.TP 
+Email: jmulisa15@alustudent.com
+.TP 
+ID: S1719024
+
